@@ -5,20 +5,27 @@ import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class App {
 
     public static int [] balise_pc = new int[20]; //read file to get that information
-    
-    
+    public static ArrayList<String[]> balise_antenne = new ArrayList<>();
+
     public static void main(String[] args)throws Exception {
-        ArrayList<int[]> balise_antenne = new ArrayList<>();
+        //ArrayList<int[]> balise_antenne = new ArrayList<>();
         //
-        balise_antenne = readEquipement();
-        analyse_csv(balise_antenne);
+        long startTime = System.currentTimeMillis();
+        DetectionAnode detection = new DetectionAnode();
+        
+        readEquipement();
+        analyse_csv();
+        detection.Detection();
+        long endTime = System.currentTimeMillis();
+        System.out.println("Execution time " + (endTime - startTime) + " milliseconds");
     }
 
-    public static void analyse_csv(ArrayList<int[]> balise_antenneList)
+    public static void analyse_csv()
     {
         //lecture du fichier
         String directory = "O:/Equipes/Électrolyse-(Secteur)/ABS/Stagiaire/Hiver 2023/données_csv";
@@ -57,13 +64,14 @@ public class App {
                 //data[x-1][8] = String.valueOf(x);
             }
 
-            String[][] newData = new String[(size)][6];
+            String[][] newData = new String[(size)][7];
             newData[0][0] = data[0][0]; //reader_uwb_id
             newData[0][1] = data[0][1]; //tag_id
             newData[0][2] = data[0][2]; //distance
             newData[0][3] = data[0][3]; //insert_timestamp
             newData[0][4] = "Pince a croute"; //presence pince a croute
-            newData[0][5] = "index"; //insert_timestamp
+            newData[0][5] = "Location"; //presence pince a croute
+            newData[0][6] = "index"; //insert_timestamp
             
             
             //transfere les colonne important et dont la distance est entre 19 et 1.88
@@ -80,11 +88,11 @@ public class App {
             }
 
             // remove all nul rows
-            String[][] tempnewData = new String[k][6];
+            String[][] tempnewData = new String[k][newData[0].length];
             //System.out.println("k "+k);
             for (int i =0; i<newData.length;i++)
             {
-                for (int j=0; j<6 ;j++)
+                for (int j=0; j<newData[0].length ;j++)
                 {
                     if (newData[i][0]!=null )
                     {
@@ -95,7 +103,7 @@ public class App {
 
             //newData = tempnewData; //removeNullCells(newData,k);
             //System.out.println("old k "+newData.length);
-            newData = new String[k][6];
+            newData = new String[k][tempnewData[0].length];
             newData = (String[][])resize(tempnewData,k);
 
             //System.out.println("new k "+newData.length);      
@@ -130,13 +138,13 @@ public class App {
             //filtre et prend pour newData[j][4] > 1
             int one_counter = 1;
             //String[][] OnenewData = new String[newData.length][6];
-            String[][] tempOnenewData = new String[newData.length][6];
+            String[][] tempOnenewData = new String[newData.length][newData[0].length];
 
             for (int i = 1; i<newData.length; i++){
                 
                 if(Integer.valueOf(newData[i][4]) >= 1)
                 {
-                    for(int j=0; j<6; j++)
+                    for(int j=0; j<newData[0].length; j++)
                     {
                         //OnenewData[i][j] = newData[i][j];
                         tempOnenewData[one_counter][j] = newData[i][j];
@@ -144,67 +152,77 @@ public class App {
                     one_counter++;
                 }
             }
-            for(int i=0; i<6; i++){
+            for(int i=0; i<newData[0].length; i++){
                 tempOnenewData[0][i] = newData[0][i];
             }
-            System.out.println("one_counter : "+one_counter);
-            newData = new String[one_counter][6];
-            System.out.println("newData one_counter : "+newData.length);
+            //System.out.println("one_counter : "+one_counter);
+            newData = new String[one_counter][tempOnenewData[0].length];
+            //System.out.println("newData one_counter : "+newData.length);
             newData = (String[][])resize(tempOnenewData,one_counter);
 
             
             //tout enlever sauf les paire antenne-balise
             int nextPaire = 1;
-            String[][] tempPaireBalise_antenne = new String[newData.length][6];
+            String[][] tempPaireBalise_antenne = new String[newData.length][newData[0].length];
             for (int i = 1; i<newData.length; i++){
-                for(int n = 0; n<balise_antenneList.size(); n++){
-                    if((Integer.valueOf(newData[i][0]) == balise_antenneList.get(n)[1]) && (Integer.valueOf(newData[i][1]) == balise_antenneList.get(n)[0]))
+                for(int n = 0; n<balise_antenne.size(); n++){
+                    //System.out.println(Integer.valueOf(newData[i][0])+ "==" +Integer.valueOf(balise_antenne.get(n)[1]));
+                    //System.out.println(Integer.valueOf(newData[i][1]) + "==" + Integer.valueOf(balise_antenne.get(n)[0]));
+                    if((Integer.valueOf(newData[i][0]) == Integer.parseInt(balise_antenne.get(n)[1])) && (Integer.valueOf(newData[i][1]) == Integer.parseInt(balise_antenne.get(n)[0])))
                     {
-                        for(int j=0; j<6; j++)
+                        for(int j=0; j<tempPaireBalise_antenne[0].length; j++)
                         {
                             tempPaireBalise_antenne[nextPaire][j] = newData[i][j];
+                            
                         }
+                        tempPaireBalise_antenne[nextPaire][5] = String.valueOf(balise_antenne.get(n)[2]);
                         nextPaire++;
                     }
 
                 }
             }
-            System.out.println("nombre de paire an-bal : "+nextPaire);
-            for(int i=0; i<6; i++){
+            //System.out.println("nombre de paire an-bal : "+nextPaire);
+            for(int i=0; i<newData[0].length; i++){
                 tempPaireBalise_antenne[0][i] = newData[0][i];
             }
-            newData = new String[nextPaire][6];
+            newData = new String[nextPaire][tempPaireBalise_antenne[0].length];
             newData = (String[][])resize(tempPaireBalise_antenne,nextPaire);
             System.out.println("taille apres filtre pairage resize : "+newData.length);
             
             /*
              * enlever la colonne pince a croute
             */
-            String[][] removePCdata = new String[newData.length][5];
+            String[][] removePCdata = new String[newData.length][newData[0].length-1];
             for (int j=0; j<newData.length; j++){
                 removePCdata[j][0] = newData[j][0]; //reader_uwb_id
                 removePCdata[j][1] = newData[j][1]; //tag_id
                 removePCdata[j][2] = newData[j][2]; //distance
                 removePCdata[j][3] = newData[j][3]; //insert_timestamp
-                removePCdata[j][4] = newData[j][5]; //index
+                removePCdata[j][4] = newData[j][5]; //location
+                removePCdata[j][5] = newData[j][6]; //index
             }
-            newData = new String[removePCdata.length][5];
+            newData = new String[removePCdata.length][removePCdata[0].length];
             //newData = (String[][])resize(removePCdata,removePCdata.length);
             //newData = removeNullCells(removePCdata,removePCdata.length);
             newData = removePCdata;
 
-            //column d'index
+            //column d'index dans la derniere colonne
             for (int i=1;i<newData.length;i++){
-                newData[i][4] = String.valueOf(i-1);
+                newData[i][newData[0].length-1] = String.valueOf(i);
             }
             //display few data
             for (int j=0; j<10; j++){
-                for (int h=0; h<5; h++){
+                for (int h=0; h<newData[0].length; h++){
                     System.out.print(newData[j][h]+"  ");
                 }
                 System.out.print("\n");
             }
             write_csv(newData);
+            System.out.println("****************DETECTION ANODE****************");
+            /* 
+             * Etape de detection pour anode
+             */
+
             
         }
         catch (Exception e)
@@ -249,19 +267,18 @@ public class App {
         String encoding = "UTF-8";
         try{
 
-        PrintWriter writer = new PrintWriter(fileName, encoding);
-        
-        for (int j = 0; j < myArray.length; j ++){
-            //if (myArray[j][0].equals("")) { break; }
-            for (int i = 0; i < myArray[0].length; i ++){
-                
-                writer.print(myArray[j][i]);
-                writer.print(";");  
+            PrintWriter writer = new PrintWriter(fileName, encoding);
+            
+            for (int j = 0; j < myArray.length; j ++){
+                for (int i = 0; i < myArray[0].length; i ++){
+                    
+                    writer.print(myArray[j][i]);
+                    writer.print(";");  
+                }
+                writer.print("\n");
             }
-            writer.print("\n");
-        }
 
-        writer.close();
+            writer.close();
         }
         catch (Exception e)
         {
@@ -271,13 +288,12 @@ public class App {
    
     }
 
-    public static ArrayList<int[]> readEquipement(){
+    public static void readEquipement(){
         String directory = "O:/Equipes/Électrolyse-(Secteur)/ABS/Stagiaire/Hiver 2023/Attribue";
         File file = new File(directory+"/Liste antene et balise UWB-csv.csv");
         int size = 0;
         String line;
         String[] mots ;
-        ArrayList<int[]> _balise_antenne = new ArrayList<int[]>();
         String search = "APLE";
         String tiret = "-";
         String pont = "PONT";
@@ -291,7 +307,7 @@ public class App {
         catch (Exception e) {
             System.out.println(e);
         }
-
+        
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {        
 
             ArrayList<String[]> content = new ArrayList<String[]>();
@@ -314,23 +330,25 @@ public class App {
                 else if(content.get(i)[1].toLowerCase().indexOf(pont.toLowerCase()) != -1) {
                     
                     if ((content.get(i)[3].toLowerCase().contains(tiret)==false) && (content.get(i)[2] != "")){
-                        int [] temp = new int[2];
-                        temp[0] = Integer.valueOf(content.get(i)[2]);
-                        temp[1] = Integer.valueOf(content.get(i)[3]);
-                        System.out.println(temp[0]+" "+temp[1]);
-                        _balise_antenne.add(temp);
+                        String [] temp = new String[3];
+                        temp[0] = String.valueOf(content.get(i)[2]);
+                        temp[1] = String.valueOf(content.get(i)[3]);
+                        temp[2] = String.valueOf(content.get(i)[4]);
+                        
+                        //System.out.println(temp[0]+"-"+temp[1]);
+                        balise_antenne.add(temp);
+                        
                         
                     }
                 }
                 
             }
-            return _balise_antenne;
+            //return balise_antenne;
         }
         
         catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();
-            return null;
         }
 
     }
