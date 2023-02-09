@@ -2,13 +2,13 @@ import java.io.*;
 
 
 public class DetectionAnode {
-    public void Detection()throws Exception{
+    public static String myDirectory = "O:/Equipes/Électrolyse-(Secteur)/ABS/Stagiaire/Hiver 2023/";
+    public void Detection(String filecsv)throws Exception{
         String[][] BD; // importer de la BD
         String[][] cp; // tableau final
         int[][] bd; // ligne trier pour 5 point consecutif et nombre de point consecutif
         int[] ligne; // tableau des lignes en 7m et 15m
         int[][] CP; // tableau des coups de pince
-
         
         int k = 0;
         int m = 0;
@@ -25,14 +25,8 @@ public class DetectionAnode {
             {  2, 15, 14.259 },
             {  1, 16,  15.32 },};
 
-            //System.out.println(k);
-
         /* etape 1
          * etape 2
-         * 
-         * 
-         * 
-         * 
          * 
          */
 
@@ -40,12 +34,8 @@ public class DetectionAnode {
         String st;
         String[] mots = null;
         int size = 0; 
-        //https://github.com/Nebrosed/ABI1/blob/ef5b82968537c1d85728f105f441b8840e3fd16a/PC/DETECTION_DATA_ANODES2.txt
-        //https://github.com/Nebrosed/ABI1/blob/main/PC/DETECTION_DATA_ANODES2.txt
-        ///workspace/ABI1/PC/DETECTION_DATA_ANODES2.txt
-        //PC/DETECTION_DATA_ANODES2.txt
-        String directory = "O:/Equipes/Électrolyse-(Secteur)/ABS/Stagiaire/Hiver 2023/données_traitées";
-        File file = new File(directory+"/RFID_SURAL_2023_02_02.csv");
+
+        File file = new File(myDirectory+"/données_traitées/"+"TRAITÉ_"+filecsv+".csv");
 
         //File file = new File("C:/Users/nguekj/Hiver2023/Code/Data/lecture/DETECTION_DATA_ANODES3.csv");
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -53,7 +43,6 @@ public class DetectionAnode {
                 size = size + 1;
             }
         }
-        //System.out.println(size);
         BD = new String[(size)][6]; // tableau 
         ligne = new int[(size)];
 
@@ -63,10 +52,9 @@ public class DetectionAnode {
 
                 mots = st.split(";");
                 for (int i = 0; i < BD[0].length; i ++){
-                    BD[x][i] = mots[i];
+                    BD[x][i] = mots[i].replace(',', '.');
                 }    
                 x = x +1;
-                //BD[x-1][5] = String.valueOf(x);
                 
             }
         }
@@ -75,16 +63,9 @@ public class DetectionAnode {
             System.out.print(e.getMessage());
         }
 
-        System.out.println(BD[0][5]);
-        System.out.println(BD[1][5]);
-        //System.out.print(" - ");
-        //System.out.println(BD[8478][7]);
-
         /*
          * 
          * etape 3
-         * 
-         * 
          * 
          * 
          */
@@ -97,20 +78,15 @@ public class DetectionAnode {
             
             if ((Double.valueOf(BD[i][2]) > 7.393) & (Double.valueOf(BD[i][2]) < 15.82)) {              
                 ligne[m] = i;
-                //System.out.println(ligne[m]);
                 m = m + 1;               
             }
         } 
         bd = new int[(m)][8];
         cp = new String[bd.length][8];
-        //System.out.println(bd.length);
 
         /*
          * 
-         * 
          * etape 4
-         * 
-         * 
          * 
          */
 
@@ -126,19 +102,12 @@ public class DetectionAnode {
         //regarde si la premiere valeur distance ligne[0] qui est conforme
         //
         for (int i = 1; i < bd.length; i ++){
-            //System.out.print(" ligne :  "+ligne[i] + " BD : "+Double.valueOf(BD[ligne[i]][2])) ;
-            //System.out.print(" ligne[i-1]+1 = "+ligne[i - 1] + 1);
+            
             //vient voir il y a cmb de point consecutif dans l'intervalle de + - 0.4 
             if ((Double.valueOf(BD[ligne[i]][2]) - 0.4) < tempo & (Double.valueOf(BD[ligne[i]][2]) + 0.4) > tempo & ligne[i] == ligne[i - 1] + 1){
                     n = n + 1;
                     tempo = Double.valueOf(BD[ligne[i]][2]);
-                    //System.out.print(ligne[i]-1);
-                    //System.out.print(" - ");
-                    //System.out.print(BD[ligne[i]-1][4]);
-                    //System.out.print(" - ");
-                    //System.out.print(ligne[i]);
-                    //System.out.print(" - ");
-                    //System.out.println(tempo);
+
             }
             else {
                 //au moins 5 point consecutif dans le meme intervalle 
@@ -146,11 +115,6 @@ public class DetectionAnode {
                                             
                         bd[k][0] = ligne[i-1];  //garde la valeur
                         bd[k][1] = n;      //permet de trouver combien le coup de pince a durer
-                        //System.out.print(bd[k][0]);
-                        //System.out.print(" - ");
-                        //System.out.print(bd[k][1]);   
-                        //System.out.print(" - ");
-                        //System.out.println(k);           
                         k = k + 1;
                         tempo = Double.valueOf(BD[ligne[i]][2]);
                         n = 1;              
@@ -164,10 +128,7 @@ public class DetectionAnode {
 
         /*
          * 
-         * 
-         * 
          * etape 5
-         * 
          * 
          */
 
@@ -178,7 +139,6 @@ public class DetectionAnode {
         for (int j = 0; j < CP.length; j ++){
         
             for (int i = 0; i < 10; i ++){
-                //System.out.print(Double.valueOf(BD[bd[j][0]+i][4]) + " - " + Double.valueOf(BD[bd[j][0]+i][4])+"\n");
                 //dans la ligne garder est ce qu'il y a des point consecutif
                 if ((Double.valueOf(BD[bd[j][0]+i][2]) > 3.8) & (Double.valueOf(BD[bd[j][0]+i][2]) < 5.2)){
 
@@ -186,30 +146,23 @@ public class DetectionAnode {
                     
                     for (int l = 0; l < 10; l ++){
                         //5.2 et 6 retour a la position normal
-                        if (((Double.valueOf(BD[bd[j][0]-bd[j][1]-l][2]) > 5.2) & (Double.valueOf(BD[bd[j][0]-bd[j][1]-l][2]) < 6))){
+                            //System.out.println("position : "+(bd[j][0]-bd[j][1]-l));
+                            if (((Double.valueOf(BD[bd[j][0]-bd[j][1]-l][2]) > 5.2) & (Double.valueOf(BD[bd[j][0]-bd[j][1]-l][2]) < 6))){
                                 
-                            n = n + 1; //si il trouve rien
+                                n = n + 1; //si il trouve rien
                             
-                        }
-                        // CP : il y a presence de coup de pince
-                        if (CP[k - z][0] == (Double.valueOf(BD[bd[j][0]-bd[j][1]-l][5])) || n > 1){
+                            }
+                            // CP : il y a presence de coup de pince
+                            if (CP[k - z][0] == (Double.valueOf(BD[bd[j][0]-bd[j][1]-l][5])) || n > 1){
 
-                            l = 10;
-                            CP[k][0] = bd[j][0];
-                            CP[k][1] = bd[j][1];  
-                            k = k + 1;
-                            z = 1;
+                                l = 10;
+                                CP[k][0] = bd[j][0];
+                                CP[k][1] = bd[j][1];  
+                                k = k + 1;
+                                z = 1;
+                            }
                         
-                            //System.out.print(BD[bd[j][0]][7]);
-                            //System.out.print(bd[j][0]);
-                            //System.out.print(" - ");
-                            //System.out.print(CP[k - 1][0]);
-                            //System.out.print(" - ");
-                            //System.out.print(CP[k - 1][1]);
-                            //System.out.print(" - ");
-                            //System.out.println(k - 1);
-        
-                        }
+                        
 
                     }
 
@@ -218,19 +171,12 @@ public class DetectionAnode {
             }                       
             
         }
-        //System.out.print(CP.length);
+
         /*
-         * 
-         * 
-         * 
-         * 
          * etape 6
-         * 
-         */
+        */
 
-        //FileWriter fw = new FileWriter("PC/DETECTION_DATA_ANODES2.txt");
-
-        String fileName = "O:/Equipes/Électrolyse-(Secteur)/ABS/Stagiaire/Hiver 2023/données_traitées/DETECTION_DATA_ANODES2.csv";
+        String fileName = myDirectory+ "/données_détection_anode/"+"DETECTION_"+filecsv+".csv"; //+"DETECTION_ANODES_"
         String encoding = "UTF-8";
         PrintWriter writer = new PrintWriter(fileName, encoding);
 
@@ -240,19 +186,12 @@ public class DetectionAnode {
                         writer.print("timestamp;");    
                         writer.println("line_number;");  
 
-        
         for (int j = 0; j < k; j ++){
-
-            //System.out.print(BD[CP[j][0] - 1][4]);
-            //System.out.print(" - ");
-            //System.out.println(j);
 
             for (int i = 0; i < 8; i ++){
                 //regarde si la distance est <|> que +|- 0.5305 de celle des anodes 
                 if ((Double.valueOf(BD[CP[j][0] - 1][2]) > A[i][2] - 0.5305) & (Double.valueOf(BD[CP[j][0] - 1][2]) <= A[i][2] + 0.5305)){                  
                     cp[j][0] = String.valueOf(A[i][0]); // numero de l<anode
-                        //System.out.print(j);
-                        //System.out.print(" - ");  
                         writer.print(cp[j][0]+" - "+A[i][1]);
                         writer.print(";");                  
                     cp[j][1] = String.valueOf(BD[CP[j][0]-1][4]); // nom de la location // MSE 
@@ -266,8 +205,6 @@ public class DetectionAnode {
                         writer.print(";");
                     cp[j][4] = String.valueOf(CP[j][0]); // numero de la ligne
                         writer.println(cp[j][4]);
-                        //writer.print("\n");
-
                     i = 8;
                 }
                 
@@ -275,18 +212,12 @@ public class DetectionAnode {
 
         }
         writer.close();
-
-        /*
-         * 
-         * 
-         * 
-         * 
-         * 
-         * etape 7
-         */
-
-        
     }
-
-
+    public Double parseIntOrNull(String value) {
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
 }

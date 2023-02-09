@@ -1,35 +1,30 @@
 import java.io.*;
-import java.nio.file.*;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Scanner;
 
 public class App {
 
     public static int [] balise_pc = new int[20]; //read file to get that information
     public static ArrayList<String[]> balise_antenne = new ArrayList<>();
-
+    public static String myDirectory = "O:/Equipes/Électrolyse-(Secteur)/ABS/Stagiaire/Hiver 2023/";
     public static void main(String[] args)throws Exception {
-        //ArrayList<int[]> balise_antenne = new ArrayList<>();
-        //
-        long startTime = System.currentTimeMillis();
+        Scanner myScanner = new Scanner(System.in);
+        System.out.println("Enter wanted date : ");
+        String filecsv = "RFID_SURAL_"; 
+        filecsv += myScanner.nextLine();
+        myScanner.close();
+        System.out.println(filecsv);
         DetectionAnode detection = new DetectionAnode();
-        
         readEquipement();
-        analyse_csv();
-        detection.Detection();
-        long endTime = System.currentTimeMillis();
-        System.out.println("Execution time " + (endTime - startTime) + " milliseconds");
+        analyse_csv(filecsv);
+        detection.Detection(filecsv);
+        
     }
 
-    public static void analyse_csv()
+    public static void analyse_csv(String filecsv)
     {
         //lecture du fichier
-        String directory = "O:/Equipes/Électrolyse-(Secteur)/ABS/Stagiaire/Hiver 2023/données_csv";
-        File file = new File(directory+"/RFID_SURAL_2023_02_02.csv");
+        File file = new File(myDirectory+"/données_csv/"+filecsv+".csv");
         
         System.out.println(file.getName());
         int size = 0;
@@ -37,7 +32,6 @@ public class App {
         String[][] data;
         String line;
         String[] mots = null;
-        //int [] balise_pc = {2014,2011,2545,2074}; //read file to get that information
         
         //lecture
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -61,7 +55,6 @@ public class App {
                     data[x][i] = mots[i].replace(',', '.');
                 }    
                 x = x +1;
-                //data[x-1][8] = String.valueOf(x);
             }
 
             String[][] newData = new String[(size)][7];
@@ -73,9 +66,7 @@ public class App {
             newData[0][5] = "Location"; //presence pince a croute
             newData[0][6] = "index"; //insert_timestamp
             
-            
             //transfere les colonne important et dont la distance est entre 19 et 1.88
-            
             int k = 1;
             for (int j=1; j<size; j++){
                 if ((Float.parseFloat(data[j][2])<19) && (Float.parseFloat(data[j][2])>1.88) ){
@@ -89,7 +80,6 @@ public class App {
 
             // remove all nul rows
             String[][] tempnewData = new String[k][newData[0].length];
-            //System.out.println("k "+k);
             for (int i =0; i<newData.length;i++)
             {
                 for (int j=0; j<newData[0].length ;j++)
@@ -101,13 +91,9 @@ public class App {
                 }
             }
 
-            //newData = tempnewData; //removeNullCells(newData,k);
-            //System.out.println("old k "+newData.length);
             newData = new String[k][tempnewData[0].length];
             newData = (String[][])resize(tempnewData,k);
 
-            //System.out.println("new k "+newData.length);      
-            
             //count pince a croute detect
             int pc_count = 10;
             boolean flag = true;
@@ -131,13 +117,12 @@ public class App {
                     }
                 
                 }
-                //pc_count -= 1;
+                
                 flag = true;
             }
             
             //filtre et prend pour newData[j][4] > 1
             int one_counter = 1;
-            //String[][] OnenewData = new String[newData.length][6];
             String[][] tempOnenewData = new String[newData.length][newData[0].length];
 
             for (int i = 1; i<newData.length; i++){
@@ -146,7 +131,6 @@ public class App {
                 {
                     for(int j=0; j<newData[0].length; j++)
                     {
-                        //OnenewData[i][j] = newData[i][j];
                         tempOnenewData[one_counter][j] = newData[i][j];
                     }
                     one_counter++;
@@ -155,9 +139,7 @@ public class App {
             for(int i=0; i<newData[0].length; i++){
                 tempOnenewData[0][i] = newData[0][i];
             }
-            //System.out.println("one_counter : "+one_counter);
             newData = new String[one_counter][tempOnenewData[0].length];
-            //System.out.println("newData one_counter : "+newData.length);
             newData = (String[][])resize(tempOnenewData,one_counter);
 
             
@@ -166,8 +148,6 @@ public class App {
             String[][] tempPaireBalise_antenne = new String[newData.length][newData[0].length];
             for (int i = 1; i<newData.length; i++){
                 for(int n = 0; n<balise_antenne.size(); n++){
-                    //System.out.println(Integer.valueOf(newData[i][0])+ "==" +Integer.valueOf(balise_antenne.get(n)[1]));
-                    //System.out.println(Integer.valueOf(newData[i][1]) + "==" + Integer.valueOf(balise_antenne.get(n)[0]));
                     if((Integer.valueOf(newData[i][0]) == Integer.parseInt(balise_antenne.get(n)[1])) && (Integer.valueOf(newData[i][1]) == Integer.parseInt(balise_antenne.get(n)[0])))
                     {
                         for(int j=0; j<tempPaireBalise_antenne[0].length; j++)
@@ -181,14 +161,14 @@ public class App {
 
                 }
             }
-            //System.out.println("nombre de paire an-bal : "+nextPaire);
+
             for(int i=0; i<newData[0].length; i++){
                 tempPaireBalise_antenne[0][i] = newData[0][i];
             }
             newData = new String[nextPaire][tempPaireBalise_antenne[0].length];
             newData = (String[][])resize(tempPaireBalise_antenne,nextPaire);
-            System.out.println("taille apres filtre pairage resize : "+newData.length);
-            
+            write_csv(newData, myDirectory+"/données_intermédiaire/"+file.getName());
+
             /*
              * enlever la colonne pince a croute
             */
@@ -202,8 +182,6 @@ public class App {
                 removePCdata[j][5] = newData[j][6]; //index
             }
             newData = new String[removePCdata.length][removePCdata[0].length];
-            //newData = (String[][])resize(removePCdata,removePCdata.length);
-            //newData = removeNullCells(removePCdata,removePCdata.length);
             newData = removePCdata;
 
             //column d'index dans la derniere colonne
@@ -217,12 +195,8 @@ public class App {
                 }
                 System.out.print("\n");
             }
-            write_csv(newData);
+            write_csv(newData,myDirectory+"/données_traitées/"+"TRAITÉ_"+file.getName());
             System.out.println("****************DETECTION ANODE****************");
-            /* 
-             * Etape de detection pour anode
-             */
-
             
         }
         catch (Exception e)
@@ -261,13 +235,11 @@ public class App {
         return newArray;
      }
 
-    public static void write_csv(String[][] myArray){
-        String directory = "O:/Equipes/Électrolyse-(Secteur)/ABS/Stagiaire/Hiver 2023/données_traitées";
-        String fileName = directory+"/RFID_SURAL_2023_02_02.csv";
+    public static void write_csv(String[][] myArray, String myfile){
         String encoding = "UTF-8";
         try{
 
-            PrintWriter writer = new PrintWriter(fileName, encoding);
+            PrintWriter writer = new PrintWriter(myfile, encoding);
             
             for (int j = 0; j < myArray.length; j ++){
                 for (int i = 0; i < myArray[0].length; i ++){
@@ -291,39 +263,25 @@ public class App {
     public static void readEquipement(){
         String directory = "O:/Equipes/Électrolyse-(Secteur)/ABS/Stagiaire/Hiver 2023/Attribue";
         File file = new File(directory+"/Liste antene et balise UWB-csv.csv");
-        int size = 0;
         String line;
         String[] mots ;
         String search = "APLE";
         String tiret = "-";
         String pont = "PONT";
+
         //lecture
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            while ((line = br.readLine()) != null){
-                size = size + 1;
-            }
-            //System.out.println(size);
-        }                  
-        catch (Exception e) {
-            System.out.println(e);
-        }
-        
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {        
 
             ArrayList<String[]> content = new ArrayList<String[]>();
             while ((line = br.readLine()) != null){
-                
                 mots = line.split(";");
                 content.add(mots);
-      
             }
 
             int count = 0;
-            //int [] temp = new int[2];
             for(int i=0; i<content.size();i++){
                 if((content.get(i)[1].toLowerCase().indexOf(search.toLowerCase()) != -1) && (content.get(i)[2].toLowerCase().contains(tiret)==false))
                 {
-                    //System.out.println(Integer.valueOf(content.get(i)[2]));
                     balise_pc[count] = Integer.valueOf(content.get(i)[2]);
                     count++;
                 }
@@ -335,15 +293,12 @@ public class App {
                         temp[1] = String.valueOf(content.get(i)[3]);
                         temp[2] = String.valueOf(content.get(i)[4]);
                         
-                        //System.out.println(temp[0]+"-"+temp[1]);
                         balise_antenne.add(temp);
-                        
                         
                     }
                 }
                 
             }
-            //return balise_antenne;
         }
         
         catch (Exception e) {
