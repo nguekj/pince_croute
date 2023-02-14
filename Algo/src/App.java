@@ -1,6 +1,11 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class App {
 
@@ -9,7 +14,7 @@ public class App {
     public static String myDirectory = "O:/Equipes/Électrolyse-(Secteur)/ABS/Stagiaire/Hiver 2023/";
     public static void main(String[] args)throws Exception {
         Scanner myScanner = new Scanner(System.in);
-        System.out.println("Enter wanted date : ");
+        System.out.println("Enter wanted date yyyy_mm_dd: ");
         String filecsv = "RFID_SURAL_"; 
         filecsv += myScanner.nextLine();
         myScanner.close();
@@ -18,15 +23,16 @@ public class App {
         readEquipement();
         analyse_csv(filecsv);
         detection.Detection(filecsv);
-        
     }
 
     public static void analyse_csv(String filecsv)
     {
         //lecture du fichier
         File file = new File(myDirectory+"/données_csv/"+filecsv+".csv");
+        if(file.exists()){
+            System.out.println(file.getName());
+        }
         
-        System.out.println(file.getName());
         int size = 0;
         int x = 0;
         String[][] data;
@@ -96,44 +102,60 @@ public class App {
 
             //count pince a croute detect
             int pc_count = 10;
-            boolean flag = true;
+            int myCounter = 0;
+            boolean flag = false;
+            boolean startCountPC = false;
+            boolean isbalisepcfound = false;
             for (int j=1; j < newData.length; j++){
+                isbalisepcfound = false;
                 for (int i=0; i <balise_pc.length; i++)
                 {
                     if (Integer.valueOf(newData[j][1])==balise_pc[i])
                     {
-                        pc_count = 10;
-                        newData[j][4] = String.valueOf(pc_count);
-                        
-                        break;
+                    isbalisepcfound = true;
+                    break;
                     }
-                    else{
-                        if (flag){
-                            pc_count -= 1; 
-                            flag = false;
-                            newData[j][4] = String.valueOf(pc_count);
-                        }
-                        
-                    }
-                
                 }
                 
-                flag = true;
+                if(isbalisepcfound){
+                    
+                    if(myCounter<0){
+                        myCounter+=2;
+                    }
+                    if(myCounter>=1 ){
+                        myCounter=10;
+                    }
+                }
+                else{
+                    myCounter-=1;
+                    if(myCounter<-5){
+                        myCounter=-5;
+                    }
+                }
+                
+
+                newData[j][4] = String.valueOf(myCounter);
+    
             }
             
+            write_csv(newData,myDirectory+"PC_"+file.getName());
+            System.exit(0);
+            //System.out.println("------------exit---------------");
+
             //filtre et prend pour newData[j][4] > 1
             int one_counter = 1;
             String[][] tempOnenewData = new String[newData.length][newData[0].length];
 
             for (int i = 1; i<newData.length; i++){
-                
-                if(Integer.valueOf(newData[i][4]) >= 1)
-                {
-                    for(int j=0; j<newData[0].length; j++)
+                if(newData[i][4]!=null){
+                    if(Integer.valueOf(newData[i][4]) >= 1)
                     {
-                        tempOnenewData[one_counter][j] = newData[i][j];
+                        for(int j=0; j<newData[0].length; j++)
+                        {
+                            tempOnenewData[one_counter][j] = newData[i][j];
+                        }
+                        one_counter++;
                     }
-                    one_counter++;
                 }
             }
             for(int i=0; i<newData[0].length; i++){
@@ -167,7 +189,7 @@ public class App {
             }
             newData = new String[nextPaire][tempPaireBalise_antenne[0].length];
             newData = (String[][])resize(tempPaireBalise_antenne,nextPaire);
-            write_csv(newData, myDirectory+"/données_intermédiaire/"+file.getName());
+            write_csv(newData, myDirectory+"/données_intermédiaire/INTERMEDIAIRE_"+file.getName());
 
             /*
              * enlever la colonne pince a croute
@@ -188,6 +210,7 @@ public class App {
             for (int i=1;i<newData.length;i++){
                 newData[i][newData[0].length-1] = String.valueOf(i);
             }
+
             //display few data
             for (int j=0; j<10; j++){
                 for (int h=0; h<newData[0].length; h++){
