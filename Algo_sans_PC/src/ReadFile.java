@@ -2,6 +2,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 public class ReadFile{
     private File fileEquipement;
     private File fileOperationMse;
@@ -10,7 +12,7 @@ public class ReadFile{
     private ArrayList<mseEnAnode> mseInfo = new ArrayList<>();
     private ArrayList<RfidSural> rfidsural = new ArrayList<>();
     private List<String> balisePC = new ArrayList<>();
-     
+    
     public ReadFile(File f_equipement, File f_operationMse, File f_rfidSural){
         this.fileEquipement = f_equipement;
         this.fileOperationMse = f_operationMse;
@@ -18,6 +20,9 @@ public class ReadFile{
         readEquipement();
         readMSE();
         readRfidSural();
+        System.out.println(mseInfo.size());
+        System.out.println(rfidsural.size());
+        System.out.println(balisePC.size());
     }
 
     private void readEquipement(){
@@ -48,7 +53,6 @@ public class ReadFile{
         }
         
         catch (Exception e) {
-            System.out.println(e);
             e.printStackTrace();
         }
 
@@ -59,18 +63,17 @@ public class ReadFile{
         boolean firstLine = true;
         try (BufferedReader br = new BufferedReader(new FileReader(this.fileOperationMse))) {        
             while ((line = br.readLine()) != null){
-                mseEnAnode ms = new mseEnAnode(line);
                 if (!firstLine){
-                    if ((Integer.valueOf(ms.isDayShift()) == 1 || Integer.valueOf(ms.isNightShift()) == 1)){
+                    mseEnAnode ms = new mseEnAnode(line, this.fileRfidSural.getName());
+                    if ((ms.isDayShift() == 1 || ms.isNightShift() == 1)){
                         mseInfo.add(ms);
                     }
                 }
                 firstLine = false;
-                //System.out.println(ms.toString());
             }
         }
         catch(Exception e){
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
 
@@ -94,6 +97,7 @@ public class ReadFile{
             e.printStackTrace();
         }
     }
+
 
     public ArrayList<mseEnAnode> getMSEOperationInfo(){
         return mseInfo;
