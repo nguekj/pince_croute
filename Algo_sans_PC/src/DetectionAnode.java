@@ -2,8 +2,8 @@ import java.io.*;
 
 
 public class DetectionAnode {
-    public static String myDirectory = "O:/Equipes/Électrolyse-(Secteur)/ABS/Stagiaire/Hiver 2023/";
-    public void Detection(String filecsv)throws Exception{
+    
+    public void Detection(File fileDetection, File filecsv)throws Exception{
         String[][] BD; // importer de la BD
         String[][] cp; // tableau final
         int[][] bd; // ligne trier pour 5 point consecutif et nombre de point consecutif
@@ -35,10 +35,8 @@ public class DetectionAnode {
         String[] mots = null;
         int size = 0; 
 
-        File file = new File(myDirectory+"/données_traitées/"+"TRAITÉ_"+filecsv+".csv");
-
         //File file = new File("C:/Users/nguekj/Hiver2023/Code/Data/lecture/DETECTION_DATA_ANODES3.csv");
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(filecsv))) {
             while ((st = br.readLine()) != null){
                 size = size + 1;
             }
@@ -46,7 +44,7 @@ public class DetectionAnode {
         BD = new String[(size)][6]; // tableau 
         ligne = new int[(size)];
 
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {        
+        try (BufferedReader br = new BufferedReader(new FileReader(filecsv))) {        
 
             while ((st = br.readLine()) != null){
 
@@ -176,9 +174,8 @@ public class DetectionAnode {
          * etape 6
         */
 
-        String fileName = myDirectory+ "/données_détection_anode/"+"DETECTION_"+filecsv+".csv"; //+"DETECTION_ANODES_"
         String encoding = "UTF-8";
-        PrintWriter writer = new PrintWriter(fileName, encoding);
+        PrintWriter writer = new PrintWriter(fileDetection, encoding);
 
                         writer.print("anode_number;");  
                         writer.print("location_name;");    

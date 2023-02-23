@@ -8,21 +8,22 @@ public class mseEnAnode {
     private int NightShift;
     private LocalDateTime NightStartTime;
     private LocalDateTime NightEndTime;
-    private String mseFilename;
+    //private String mseFilename;
      
     Util utilities = new Util();
 
     public mseEnAnode(String rowcsv, String fl){
-        this.mseFilename = fl;
+        //this.mseFilename = fl;
+        utilities.MseOperationFileDate = fl;
         String[] line = null;
         line = rowcsv.split(";");
         this.Equipement = line[0];
         this.DayShift = Integer.parseInt(line[1]);
-        this.DayStartTime = utilities.convertMseTimeToDateTime(line[2], this.mseFilename);
-        this.DayEndTime = utilities.convertMseTimeToDateTime(line[3], this.mseFilename);
+        this.DayStartTime = utilities.convertMseTimeToDateTime(line[2]);
+        this.DayEndTime = utilities.convertMseTimeToDateTime(line[3]);
         this.NightShift = Integer.parseInt(line[4]);
-        this.NightStartTime = utilities.convertMseTimeToDateTime(line[5], this.mseFilename);
-        this.NightEndTime = utilities.convertMseTimeToDateTime(line[6], this.mseFilename);
+        this.NightStartTime = utilities.convertMseTimeToDateTime(line[5]);
+        this.NightEndTime = utilities.convertMseTimeToDateTime(line[6]);
     }
 
     public String getEquipement(){
