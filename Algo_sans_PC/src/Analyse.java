@@ -40,43 +40,40 @@ public class Analyse {
         removeUnAnodeMse();
 
         for(int j=0; j<mseInfo.size(); j++){
-            for(int i=0;i<rfidsuralData.size();i++){
-                //for(int h=0; h<paireAntenneBaliseInOperation.size();h++){
-                //    if (Objects.equals(rfidsuralData.get(i).readerId,paireAntenneBaliseInOperation.get(h)[1]) && 
-                //    Objects.equals(rfidsuralData.get(i).tagId,paireAntenneBaliseInOperation.get(h)[0]))
-                    
-                    if(mseInfo.get(j).isDayShift()==1 && mseInfo.get(j).isNightShift()==0){
-                        mseShift = shiftEnum.DAY;
-                        //System.out.println(rfidsuralData.get(i).toString());
-                    }
-                    else if(mseInfo.get(j).isDayShift()==0 && mseInfo.get(j).isNightShift()==1){
-                        mseShift = shiftEnum.NIGHT;
-                        
-                    }
-                    else if(mseInfo.get(j).isDayShift()==1 && mseInfo.get(j).isNightShift()==1){
-                        mseShift = shiftEnum.BOTH;
-                        //System.out.println(mseShift);
-                    }
-                    shiftCase(mseShift, i, j);
+            for (int m=0; m<paireAntenneBaliseInOperation.size();m++){
+                if( Objects.equals(paireAntenneBaliseInOperation.get(m)[2], mseInfo.get(j).getEquipement())){
+                    for(int i=0;i<rfidsuralData.size();i++){
+                        if(Objects.equals(rfidsuralData.get(i).readerId, paireAntenneBaliseInOperation.get(m)[0])){
+                            if(mseInfo.get(j).isDayShift()==1 && mseInfo.get(j).isNightShift()==0 ){
+                                mseShift = shiftEnum.DAY;
+                            }
+                            else if(mseInfo.get(j).isDayShift()==0 && mseInfo.get(j).isNightShift()==1 ){
+                                mseShift = shiftEnum.NIGHT;
+                            }
+                            else if(mseInfo.get(j).isDayShift()==1 && mseInfo.get(j).isNightShift()==1 ){
+                                mseShift = shiftEnum.BOTH;
+                            }
+                            
+                            shiftCase(mseShift, i, j);
 
-                    if(i==29316 && j==1){
-                        System.out.println("ok");
+                        }
+                        }
                     }
-                    
-                //}
+                    //break;
+                }
             }
-        }
-        
-        System.out.println(temprfidsuralData.size());
+        System.out.println("line total : "+temprfidsuralData.size());
     }
+        
 
     public void paireAntenneBaliseInOperation(){
         for(int i=0; i<mseInfo.size(); i++){
             for(int j=0; j<antenneLocation.size();j++){
                 if( Objects.equals(antenneLocation.get(j)[2], mseInfo.get(i).getEquipement())){
-                    String [] temp = new String[2];
+                    String [] temp = new String[3];
                     temp[0] = antenneLocation.get(j)[0];//reader
                     temp[1] = antenneLocation.get(j)[1];//tag
+                    temp[2] = antenneLocation.get(j)[2];//mse
                     paireAntenneBaliseInOperation.add(temp);
                     break;
                 }
@@ -107,17 +104,7 @@ public class Analyse {
     public void shiftCase(shiftEnum se,int i, int j){
         switch (se) {
             case DAY:
-                //System.out.println(rfidsuralData.get(i).timestamp);
-                //System.out.println(mseInfo.get(j).getDayStartTime().minusMinutes(20));
-                /*if(rfidsuralData.get(i).timestamp.compareTo(mseInfo.get(j).getDayStartTime().minusDays(1).minusMinutes(20))>=0 && 
-                   rfidsuralData.get(i).timestamp.compareTo(mseInfo.get(j).getDayEndTime().minusDays(1))<=0){
-                    temprfidsuralData.add(rfidsuralData.get(i));
-                }
-                 
-                else if(rfidsuralData.get(i).timestamp.compareTo(mseInfo.get(j).getDayStartTime().minusDays(1).minusMinutes(20))>=0 && 
-                        rfidsuralData.get(i).timestamp.compareTo(mseInfo.get(j).getDayEndTime().minusDays(1))<=0){
-                    temprfidsuralData.add(rfidsuralData.get(i));
-                }*/
+                
                 if(utilities.isInShiftDayRange(rfidsuralData.get(i).timestamp, mseInfo.get(j).getDayStartTime(),mseInfo.get(j).getDayEndTime()))
                 {
                     temprfidsuralData.add(rfidsuralData.get(i));
@@ -126,20 +113,8 @@ public class Analyse {
                 break;
     
             case NIGHT:
-                //System.out.println(rfidsuralData.get(i).timestamp);
-                //System.out.println(mseInfo.get(j).getNightStartTime().minusMinutes(20));
-                /*if((rfidsuralData.get(i).timestamp.compareTo(mseInfo.get(j).getNightStartTime().minusMinutes(20))>=0 && 
-                   rfidsuralData.get(i).timestamp.compareTo(mseInfo.get(j).getNightEndTime())<=0) ||
-                   (rfidsuralData.get(i).timestamp.compareTo(mseInfo.get(j).getNightStartTime().minusDays(1).minusMinutes(20))>=0 &&
-                   rfidsuralData.get(i).timestamp.compareTo(mseInfo.get(j).getNightEndTime().minusDays(1))<=0)){
-                    temprfidsuralData.add(rfidsuralData.get(i));
-                }
-                 
-                else if(rfidsuralData.get(i).timestamp.compareTo(mseInfo.get(j).getNightStartTime().minusDays(1).minusMinutes(20))>=0 && 
-                        rfidsuralData.get(i).timestamp.compareTo(mseInfo.get(j).getNightEndTime().minusDays(1))<=0){
-                        temprfidsuralData.add(rfidsuralData.get(i));
-                }*/
-                if(utilities.isInShiftNightRange(rfidsuralData.get(i).timestamp, mseInfo.get(j).getNightStartTime(), mseInfo.get(j).getDayEndTime())){
+                
+                if(utilities.isInShiftNightRange(rfidsuralData.get(i).timestamp, mseInfo.get(j).getNightStartTime(), mseInfo.get(j).getNightEndTime())){
                         temprfidsuralData.add(rfidsuralData.get(i));
                 }
                 break;
@@ -147,24 +122,7 @@ public class Analyse {
             case BOTH:
                 shiftCase(shiftEnum.DAY, i, j);
                 shiftCase(shiftEnum.NIGHT, i, j);
-                /* 
-                if(rfidsuralData.get(i).timestamp.compareTo(mseInfo.get(j).getDayStartTime().minusMinutes(20))>=0 && 
-                   rfidsuralData.get(i).timestamp.compareTo(mseInfo.get(j).getDayEndTime())<=0){
-                    temprfidsuralData.add(rfidsuralData.get(i));
-                }
-                else if(rfidsuralData.get(i).timestamp.compareTo(mseInfo.get(j).getDayStartTime().minusDays(1).minusMinutes(20))>=0 && 
-                        rfidsuralData.get(i).timestamp.compareTo(mseInfo.get(j).getDayEndTime().minusDays(1))<=0){
-                    temprfidsuralData.add(rfidsuralData.get(i));
-                }
                 
-                if(rfidsuralData.get(i).timestamp.compareTo(mseInfo.get(j).getNightStartTime().minusDays(1).minusMinutes(20))>=0 && 
-                        rfidsuralData.get(i).timestamp.compareTo(mseInfo.get(j).getNightEndTime().minusDays(1))<=0 ){
-                    temprfidsuralData.add(rfidsuralData.get(i));
-                }
-                else if(rfidsuralData.get(i).timestamp.compareTo(mseInfo.get(j).getNightStartTime().minusDays(1).minusMinutes(20))>=0 && 
-                        rfidsuralData.get(i).timestamp.compareTo(mseInfo.get(j).getNightEndTime().minusDays(1))<=0){
-                    temprfidsuralData.add(rfidsuralData.get(i));
-                }*/
                 break;
 
             // Default case

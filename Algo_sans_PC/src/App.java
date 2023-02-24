@@ -19,7 +19,7 @@ public class App {
         //String[] fileDate = fileOperation.getName().split("OPERATION_")[1].split(".csv");
         //String opDate = fileDate[0].replace('_','-');
         //System.out.println(opDate);
-        /* 
+        /*
         //string to datetime wiht file date
         String[] fileDate = fileRfidSural.getName().split("RFID_SURAL_")[1].split(".csv");
         String str = "00:00:00";
@@ -43,8 +43,81 @@ public class App {
             System.out.println(rfidDatetime);
         }
         */
-
+        //jour("2023-02-06 09:00:00","2023-02-07 08:00:00","2023-02-07 20:00:00"); //jour est good
+        //nuit("2023-02-07 01:00:00","2023-02-07 20:00:00","2023-02-07 21:00:00");
+        // done work case : "2023-02-07 01:00:00","2023-02-07 02:00:00","2023-02-07 08:00:00"
+        // done work case : "2023-02-07 01:00:00","2023-02-07 02:00:00","2023-02-07 08:00:00"
     }
 
+    public static void nuit(String in, String st, String en){
+        String mseDate = "2023-02-07";
+        LocalDateTime opStart = LocalDateTime.parse("2023-02-07" +" "+"20:00:00",
+        DateTimeFormatter.ofPattern("yyyy-MM-dd H:mm:ss")).minusDays(1).minusMinutes(20);
+        LocalDateTime opEnd = LocalDateTime.parse("2023-02-07"+" "+"08:00:00",DateTimeFormatter.ofPattern("yyyy-MM-dd H:mm:ss"));
+        LocalDateTime inputDateTime = LocalDateTime.parse(in, DateTimeFormatter.ofPattern("yyyy-MM-dd H:mm:ss"));
+        LocalDateTime startDateTime = LocalDateTime.parse(st, DateTimeFormatter.ofPattern("yyyy-MM-dd H:mm:ss"));//.minusMinutes(20)
+        LocalDateTime endDateTime = LocalDateTime.parse(en, DateTimeFormatter.ofPattern("yyyy-MM-dd H:mm:ss"));
+        //startDateTime = startDateTime.minusDays(1);
+        LocalDateTime nexDay = LocalDateTime.parse(mseDate+" "+"00:00:00",DateTimeFormatter.ofPattern("yyyy-MM-dd H:mm:ss"));
+        System.out.println(inputDateTime);
+        System.out.println(startDateTime);
+        System.out.println(inputDateTime.getHour());
+        if(startDateTime.getHour()>=20 && startDateTime.getHour()<=23){
+            startDateTime = startDateTime.minusDays(1);
+        }
+        else if(startDateTime.getHour()>=0 && startDateTime.getHour()<=8){
+            startDateTime = startDateTime;
+        }
+        else{
+            System.out.println("error startdate");
+        }
+
+        if(endDateTime.getHour()>=20 && endDateTime.getHour()<=23){
+            endDateTime = endDateTime.minusDays(1);
+        }
+        else if(endDateTime.getHour()>=0 && endDateTime.getHour()<=8){
+            endDateTime = endDateTime;
+        }
+        else{
+            System.out.println("error endDateTime");
+        }
+
+        if(inputDateTime.compareTo(opStart)>=0 && inputDateTime.compareTo(opEnd)<=0){
+            if(inputDateTime.compareTo(startDateTime.minusMinutes(20))>=0 && inputDateTime.compareTo(endDateTime)<=0)
+            {
+                System.out.println(true);
+            }
+        }
+        /*
+        if(opStart.getDayOfWeek()==inputDateTime.getDayOfWeek() && (inputDateTime.getHour()>0 && inputDateTime.getHour()<8)){
+            startDateTime = startDateTime.plusDays(1);
+            System.out.println("add +1");
+        }
+        
+        if(inputDateTime.compareTo(opStart)>=0 && inputDateTime.compareTo(opEnd)<=0){
+            if(inputDateTime.compareTo(startDateTime)>=0 && inputDateTime.compareTo(endDateTime)<=0)
+            {
+                System.out.println(true);
+            }
+        }
+        */
+    }
+
+    public static void jour(String in, String st, String en){
+        LocalDateTime opStart = LocalDateTime.parse("2023-02-07" +" "+"08:00:00",
+        DateTimeFormatter.ofPattern("yyyy-MM-dd H:mm:ss")).minusDays(1).minusMinutes(20);
+        LocalDateTime opEnd = LocalDateTime.parse("2023-02-07"+" "+"20:00:00",
+        DateTimeFormatter.ofPattern("yyyy-MM-dd H:mm:ss")).minusDays(1);
+        LocalDateTime inputDateTime = LocalDateTime.parse(in, DateTimeFormatter.ofPattern("yyyy-MM-dd H:mm:ss"));
+        LocalDateTime startDateTime = LocalDateTime.parse(st, DateTimeFormatter.ofPattern("yyyy-MM-dd H:mm:ss")).minusMinutes(20);
+        LocalDateTime endDateTime = LocalDateTime.parse(en, DateTimeFormatter.ofPattern("yyyy-MM-dd H:mm:ss"));
+        
+        if(inputDateTime.compareTo(opStart)>=0 && inputDateTime.compareTo(opEnd)<=0){
+            if(inputDateTime.compareTo(startDateTime.minusDays(1))>=0 && inputDateTime.compareTo(endDateTime.minusDays(1))<=0)
+            {
+                System.out.println(true);
+            }
+        }
+    }
     
 }
