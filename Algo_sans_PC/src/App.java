@@ -7,7 +7,7 @@ public class App {
     public static void main(String[] args) throws Exception {
         String dirOnline = "O:/Equipes/Électrolyse-(Secteur)/ABS/Stagiaire/Hiver 2023/";
         String dirOffline = "C:/Users/nguekj/Hiver2023/";
-        String dir = dirOffline;
+        String dir = dirOnline;
         Scanner myScanner = new Scanner(System.in);
         System.out.println("Enter wanted date yyyy_mm_dd: ");
         String filedate = myScanner.nextLine();
@@ -20,8 +20,8 @@ public class App {
         File fileDectionAnode = new File(dir+"données_détection_anode/DETECTION_RFID_SURAL_"+filedate+".csv");
         
         Analyse analyse = new Analyse(fileOperation,fileEquipement,fileRfidSural,fileTraite);
-        //DetectionAnode da = new DetectionAnode();
-        //da.Detection(fileDectionAnode,fileTraite);
+        DetectionAnode da = new DetectionAnode();
+        da.Detection(fileDectionAnode,fileTraite);
         
     }
 
