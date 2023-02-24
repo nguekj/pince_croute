@@ -41,7 +41,7 @@ public class DetectionAnode {
                 size = size + 1;
             }
         }
-        BD = new String[(size)][6]; // tableau 
+        BD = new String[(size)][7]; // tableau 
         ligne = new int[(size)];
 
         try (BufferedReader br = new BufferedReader(new FileReader(filecsv))) {        
@@ -178,34 +178,33 @@ public class DetectionAnode {
         PrintWriter writer = new PrintWriter(fileDetection, encoding);
 
                         writer.print("anode_number;");  
-                        writer.print("location_name;");    
+                        writer.print("location_name;");  
+                        writer.print("groupe;");   
                         writer.print("scope_time;");  
                         writer.print("timestamp;");    
-                        writer.print("line_number;");
-                        writer.println("group;");  
+                        writer.println("line_number;");
+                         
 
         for (int j = 0; j < k; j ++){
 
             for (int i = 0; i < 8; i ++){
                 //regarde si la distance est <|> que +|- 0.5305 de celle des anodes
                 //System.out.println(BD[CP[j][0] - 1][2]); 
-                if ((Double.valueOf(BD[CP[j][0] - 1][2]) > A[i][2] - 0.5305) & (Double.valueOf(BD[CP[j][0] - 1][2]) <= A[i][2] + 0.5305)){                  
-                    cp[j][0] = String.valueOf(A[i][0]); // numero de l<anode
-                        writer.print(cp[j][0]+" - "+A[i][1]);
+                if ((Double.valueOf(BD[CP[j][0] - 1][2]) > A[i][2] - 0.5305) & (Double.valueOf(BD[CP[j][0] - 1][2]) <= A[i][2] + 0.5305)){
+
+                    writer.print(String.valueOf(A[i][0])+" - "+A[i][1]); // numero de l<anode
                         writer.print(";");                  
-                    cp[j][1] = String.valueOf(BD[CP[j][0]-1][4]); // nom de la location // MSE 
-                        writer.print(cp[j][1]);
+                    writer.print(String.valueOf(BD[CP[j][0]-1][4])); // nom de la location // MSE 
                         writer.print(";");
-                    cp[j][2] = String.valueOf(CP[j][1] * 5); // nombre de temps passer a l<anode
-                        writer.print(cp[j][2] + "sec");
+                    writer.print(BD[Integer.valueOf(CP[j][0])][6]); // groupe
+                    writer.print(";");
+                    writer.print(String.valueOf(CP[j][1] * 5) + "sec"); // nombre de temps passer a l<anode
                         writer.print(";");
-                    cp[j][3] = BD[Integer.valueOf(CP[j][0])][3]; // timestamp
-                        writer.print(cp[j][3]);
+                    writer.print(BD[Integer.valueOf(CP[j][0])][3]); // timestamp
                         writer.print(";");
-                    cp[j][4] = String.valueOf(CP[j][0]); // numero de la ligne
-                        writer.println(cp[j][4]);
-                        
-                    i = 8;
+                    writer.println(String.valueOf(CP[j][0])); // numero de la ligne
+                    
+                    i = 8; //replace by break;
                 }
                 
             }
@@ -213,6 +212,7 @@ public class DetectionAnode {
         }
         writer.close();
     }
+    
     public Double parseIntOrNull(String value) {
         try {
             return Double.parseDouble(value);

@@ -1,27 +1,28 @@
 import java.io.*;
+import java.util.Scanner;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        String dir1 = "O:/Equipes/Électrolyse-(Secteur)/ABS/Stagiaire/Hiver 2023/";
-        String dir2 = "C:/Users/nguekj/Hiver2023/";
+        String dirOnline = "O:/Equipes/Électrolyse-(Secteur)/ABS/Stagiaire/Hiver 2023/";
+        String dirOffline = "C:/Users/nguekj/Hiver2023/";
+        String dir = dirOffline;
+        Scanner myScanner = new Scanner(System.in);
+        System.out.println("Enter wanted date yyyy_mm_dd: ");
+        String filedate = myScanner.nextLine();
 
-        File fileOperation = new File(dir2+"opération_mse/OPERATION_2023_02_23.csv");
-        File fileEquipement = new File(dir2+"Attribue/Liste antene et balise UWB-csv.csv");
-        File fileRfidSural = new File(dir2+"données_csv/RFID_SURAL_2023_02_23.csv");
-        File fileTraite = new File(dir2+"données_traitées/MSE_RFID_SURAL_2023_02_23.csv");
-        File fileDectionAnode = new File(dir2+"données_détection_anode/DETECTION_RFID_SURAL_2023_02_23.csv");
-
-        Analyse analyse = new Analyse(fileOperation,fileEquipement,fileRfidSural,fileTraite);
-        DetectionAnode da = new DetectionAnode();
-        da.Detection(fileDectionAnode,fileTraite);
+        myScanner.close();
+        File fileOperation = new File(dir+"opération_mse/OPERATION_"+filedate+".csv");
+        File fileEquipement = new File(dir+"Attribue/Liste antene et balise UWB-csv.csv");
+        File fileRfidSural = new File(dir+"données_csv/RFID_SURAL_"+filedate+".csv");
+        File fileTraite = new File(dir+"données_traitées/MSE_RFID_SURAL_"+filedate+".csv");
+        File fileDectionAnode = new File(dir+"données_détection_anode/DETECTION_RFID_SURAL_"+filedate+".csv");
         
-   
-        //jour("2023-02-06 09:00:00","2023-02-07 08:00:00","2023-02-07 20:00:00"); //jour est good
-        //nuit("2023-02-07 01:00:00","2023-02-07 20:00:00","2023-02-07 21:00:00");
-        // done work case : "2023-02-07 01:00:00","2023-02-07 02:00:00","2023-02-07 08:00:00"
-        // done work case : "2023-02-07 01:00:00","2023-02-07 02:00:00","2023-02-07 08:00:00"
+        Analyse analyse = new Analyse(fileOperation,fileEquipement,fileRfidSural,fileTraite);
+        //DetectionAnode da = new DetectionAnode();
+        //da.Detection(fileDectionAnode,fileTraite);
+        
     }
 
     public static void nuit(String in, String st, String en){
