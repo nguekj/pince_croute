@@ -4,7 +4,10 @@ public class RfidSural {
     protected String readerId;
     protected String tagId;
     protected String distance;
-    protected int ColumnRange;
+    protected String mse;
+    protected String Groupe;
+    //protected String NightGroup;
+    protected int index;
     protected LocalDateTime timestamp;
     Util utilities = new Util();
 
@@ -15,7 +18,7 @@ public class RfidSural {
         this.tagId = line[1];
         this.distance = line[2].replace(',', '.');
         this.timestamp = utilities.convertStringToDateTime(line[3]);
-        this.ColumnRange = line.length;
+        
     }
     public void removeAllPC(){
 

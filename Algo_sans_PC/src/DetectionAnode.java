@@ -181,7 +181,8 @@ public class DetectionAnode {
                         writer.print("location_name;");    
                         writer.print("scope_time;");  
                         writer.print("timestamp;");    
-                        writer.println("line_number;");  
+                        writer.print("line_number;");
+                        writer.println("group;");  
 
         for (int j = 0; j < k; j ++){
 
@@ -203,6 +204,7 @@ public class DetectionAnode {
                         writer.print(";");
                     cp[j][4] = String.valueOf(CP[j][0]); // numero de la ligne
                         writer.println(cp[j][4]);
+                        
                     i = 8;
                 }
                 

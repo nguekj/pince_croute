@@ -8,6 +8,9 @@ public class mseEnAnode {
     private int NightShift;
     private LocalDateTime NightStartTime;
     private LocalDateTime NightEndTime;
+    protected String DayGroupe;
+    protected String NightGroupe; 
+    
     //private String mseFilename;
      
     Util utilities = new Util();
@@ -21,9 +24,16 @@ public class mseEnAnode {
         this.DayShift = Integer.parseInt(line[1]);
         this.DayStartTime = utilities.convertMseTimeToDateTime(line[2]);
         this.DayEndTime = utilities.convertMseTimeToDateTime(line[3]);
-        this.NightShift = Integer.parseInt(line[4]);
-        this.NightStartTime = utilities.convertMseTimeToDateTime(line[5]);
-        this.NightEndTime = utilities.convertMseTimeToDateTime(line[6]);
+        this.DayGroupe = line[4];
+        this.NightShift = Integer.parseInt(line[5]);
+        this.NightStartTime = utilities.convertMseTimeToDateTime(line[6]);
+        this.NightEndTime = utilities.convertMseTimeToDateTime(line[7]);
+        if(line.length==9){
+            this.NightGroupe = line[8];
+        }
+        else{
+            this.NightGroupe="-";
+        }
     }
 
     public String getEquipement(){

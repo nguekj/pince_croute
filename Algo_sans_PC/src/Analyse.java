@@ -63,8 +63,32 @@ public class Analyse {
                 }
             }
         System.out.println("line total : "+temprfidsuralData.size());
+        addMseToFinalRfidsural();
     }
-        
+    /*
+    public void addGroupToFinalRfidsural(){
+        for(int i=0; i<mseInfo.size();i++){
+            for(int j=0; j<temprfidsuralData.size();j++){
+                if
+            }
+        }
+    }*/
+    public void addMseToFinalRfidsural(){
+        ArrayList<RfidSural> tempData = new ArrayList<>();
+        int count = 0;
+        for(int i=0; i<paireAntenneBaliseInOperation.size(); i++){
+            for(int j=0; j<temprfidsuralData.size();j++){
+                if( Objects.equals(paireAntenneBaliseInOperation.get(i)[0], temprfidsuralData.get(j).readerId)){
+                    temprfidsuralData.get(j).mse = paireAntenneBaliseInOperation.get(i)[2];
+                    temprfidsuralData.get(j).index = count + 1;
+                    
+                    tempData.add(temprfidsuralData.get(j));
+                    count++;
+                }
+            }
+        }
+        temprfidsuralData = tempData;
+    }
 
     public void paireAntenneBaliseInOperation(){
         for(int i=0; i<mseInfo.size(); i++){
@@ -101,21 +125,26 @@ public class Analyse {
         System.out.println("rfidsurad final size : "+rfidsuralData.size());
         write_csv(rfidsuralData, new File("C:/Users/nguekj/Hiver2023/temp.csv"));
     }
+
     public void shiftCase(shiftEnum se,int i, int j){
         switch (se) {
             case DAY:
                 
                 if(utilities.isInShiftDayRange(rfidsuralData.get(i).timestamp, mseInfo.get(j).getDayStartTime(),mseInfo.get(j).getDayEndTime()))
                 {
+                    rfidsuralData.get(i).Groupe = mseInfo.get(j).DayGroupe;
                     temprfidsuralData.add(rfidsuralData.get(i));
+                    
                 }
                 
                 break;
     
             case NIGHT:
                 
-                if(utilities.isInShiftNightRange(rfidsuralData.get(i).timestamp, mseInfo.get(j).getNightStartTime(), mseInfo.get(j).getNightEndTime())){
-                        temprfidsuralData.add(rfidsuralData.get(i));
+                if(utilities.isInShiftNightRange(rfidsuralData.get(i).timestamp, mseInfo.get(j).getNightStartTime(), mseInfo.get(j).getNightEndTime()))
+                {
+                    rfidsuralData.get(i).Groupe = mseInfo.get(j).NightGroupe;
+                    temprfidsuralData.add(rfidsuralData.get(i));
                 }
                 break;
     
@@ -145,11 +174,17 @@ public class Analyse {
             writer.print("distance");
             writer.print(";");
             writer.print("insert_timestamp");
-            writer.print(";"); 
+            writer.print(";");
+            writer.print("Location");
+            writer.print(";");
+            writer.print("Index");
+            writer.print(";");
+            writer.print("Group");
+            writer.print(";");   
             writer.print("\n");
 
             for (int j = 0; j < myArrayList.size(); j ++){
-                //for (int i = 0; i < myArrayList.get(i).ColumnRange; i ++){
+                
                     
                     writer.print(myArrayList.get(j).readerId);
                     writer.print(";");
@@ -158,6 +193,12 @@ public class Analyse {
                     writer.print(myArrayList.get(j).distance);
                     writer.print(";"); 
                     writer.print(utilities.convertDateTimeToString(myArrayList.get(j).timestamp));
+                    writer.print(";");
+                    writer.print(myArrayList.get(j).mse);
+                    writer.print(";");
+                    writer.print(String.valueOf(myArrayList.get(j).index));
+                    writer.print(";");
+                    writer.print(myArrayList.get(j).Groupe);
                     writer.print(";");   
                 //}
                 writer.print("\n");
