@@ -6,9 +6,9 @@ import java.util.Objects;
 public class Analyse {
 
     public ArrayList<String[]> antenneLocation = new ArrayList<>();
-    public ArrayList<mseEnAnode> mseInfo = new ArrayList<>();
-    public ArrayList<RfidSural> rfidsuralData = new ArrayList<>();
-    public ArrayList<RfidSural> temprfidsuralData = new ArrayList<>();
+    public  ArrayList<mseEnAnode> mseInfo = new ArrayList<>();
+    public  ArrayList<RfidSural> rfidsuralData = new ArrayList<>();
+    public  ArrayList<RfidSural> temprfidsuralData = new ArrayList<>();
     public ArrayList<String[]> readerAnode = new ArrayList<>();
     public ArrayList<String[]> paireAntenneBaliseInOperation = new ArrayList<>();
 
@@ -25,7 +25,7 @@ public class Analyse {
         this.rfidsuralData = rf.getRfidSural();
         this.fileForDetectionAnode = fileDest;
 
-        rfidSuralDataInMseInfoRange();
+        rfidSuralDataInAnode();
         write_csv(temprfidsuralData,fileDest);
     }
     enum shiftEnum{
@@ -34,7 +34,8 @@ public class Analyse {
             NIGHT,
             BOTH
         }
-    public void rfidSuralDataInMseInfoRange(){
+        
+    public void rfidSuralDataInAnode(){
         shiftEnum mseShift = shiftEnum.NONE;
         paireAntenneBaliseInOperation();
         removeUnAnodeMse();
@@ -65,14 +66,7 @@ public class Analyse {
         System.out.println("line total : "+temprfidsuralData.size());
         addMseToFinalRfidsural();
     }
-    /*
-    public void addGroupToFinalRfidsural(){
-        for(int i=0; i<mseInfo.size();i++){
-            for(int j=0; j<temprfidsuralData.size();j++){
-                if
-            }
-        }
-    }*/
+
     public void addMseToFinalRfidsural(){
         ArrayList<RfidSural> tempData = new ArrayList<>();
         int count = 0;

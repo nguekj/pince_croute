@@ -17,7 +17,7 @@ public class App {
         File fileEquipement = new File(dir+"Attribue/Liste antene et balise UWB-csv.csv");
         File fileRfidSural = new File(dir+"données_csv/RFID_SURAL_"+filedate+".csv");
         File fileTraite = new File(dir+"données_traitées/MSE_RFID_SURAL_"+filedate+".csv");
-        File fileDectionAnode = new File(dir+"données_détection_anode/DETECTION_RFID_SURAL_"+filedate+".csv");
+        File fileDectionAnode = new File(dir+"données_détection_anode/DETECTION_RFID_SURAL_"+filedate+".csv"); // file will only be DETECTION_RFID_SURAL
         
         Analyse analyse = new Analyse(fileOperation,fileEquipement,fileRfidSural,fileTraite);
         DetectionAnode da = new DetectionAnode();

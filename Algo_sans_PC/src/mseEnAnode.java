@@ -15,9 +15,9 @@ public class mseEnAnode {
      
     Util utilities = new Util();
 
-    public mseEnAnode(String rowcsv, String fl){
+    public mseEnAnode(String rowcsv, String fmseDate){
         //this.mseFilename = fl;
-        utilities.MseOperationFileDate = fl;
+        utilities.setMseOperationFileDate(fmseDate);
         String[] line = null;
         line = rowcsv.split(";");
         this.Equipement = line[0];

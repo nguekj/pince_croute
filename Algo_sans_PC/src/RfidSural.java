@@ -20,9 +20,6 @@ public class RfidSural {
         this.timestamp = utilities.convertStringToDateTime(line[3]);
         
     }
-    public void removeAllPC(){
-
-    }
 
     @Override
     public String toString(){

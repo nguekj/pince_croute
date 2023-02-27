@@ -1,11 +1,12 @@
 import java.io.*;
-
+import java.io.FileWriter;
+import java.nio.charset.StandardCharsets;
 
 public class DetectionAnode {
     
     public void Detection(File fileDetection, File filecsv)throws Exception{
         String[][] BD; // importer de la BD
-        String[][] cp; // tableau final
+        //String[][] cp; // tableau final
         int[][] bd; // ligne trier pour 5 point consecutif et nombre de point consecutif
         int[] ligne; // tableau des lignes en 7m et 15m
         int[][] CP; // tableau des coups de pince
@@ -80,7 +81,7 @@ public class DetectionAnode {
             }
         } 
         bd = new int[(m)][8];
-        cp = new String[bd.length][8];
+        //cp = new String[bd.length][8];
 
         /*
          * 
@@ -173,7 +174,50 @@ public class DetectionAnode {
         /*
          * etape 6
         */
+        //String encoding = "UTF-8";
+        boolean appendMose = false;
+        FileWriter writer = new FileWriter(fileDetection,StandardCharsets.UTF_8,appendMose); //true for append mode
+        if(!fileDetection.exists() || !appendMose){
+                        writer.write("anode_number;");  
+                        writer.write("location_name;");  
+                        writer.write("groupe;");   
+                        writer.write("scope_time;");  
+                        writer.write("timestamp;");    
+                        writer.write("line_number;");
+                        writer.write("\n");
+        }                 
 
+        for (int j = 0; j < k; j ++){
+
+            for (int i = 0; i < 8; i ++){
+                //regarde si la distance est <|> que +|- 0.5305 de celle des anodes
+                //System.out.println(BD[CP[j][0] - 1][2]); 
+                if ((Double.valueOf(BD[CP[j][0] - 1][2]) > A[i][2] - 0.5305) & (Double.valueOf(BD[CP[j][0] - 1][2]) <= A[i][2] + 0.5305)){
+
+                    writer.write(String.valueOf(A[i][0])+" - "+A[i][1]); // numero de l<anode
+                        writer.write(";");                  
+                    writer.write(String.valueOf(BD[CP[j][0]-1][4])); // nom de la location // MSE 
+                        writer.write(";");
+                    writer.write(BD[Integer.valueOf(CP[j][0])][6]); // groupe
+                    writer.write(";");
+                    writer.write(String.valueOf(CP[j][1] * 5) + "sec"); // nombre de temps passer a l<anode
+                        writer.write(";");
+                    writer.write(BD[Integer.valueOf(CP[j][0])][3]); // timestamp
+                        writer.write(";");
+                    writer.write(String.valueOf(CP[j][0])); // numero de la ligne
+                    writer.write("\n");
+                    
+                    i = 8; //replace by break;
+                }
+                
+            }
+
+        }
+        writer.close();
+
+
+
+        /* 
         String encoding = "UTF-8";
         PrintWriter writer = new PrintWriter(fileDetection, encoding);
 
@@ -211,6 +255,7 @@ public class DetectionAnode {
 
         }
         writer.close();
+        */
     }
     
     public Double parseIntOrNull(String value) {
