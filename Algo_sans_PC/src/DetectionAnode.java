@@ -19,7 +19,7 @@ public class DetectionAnode {
         double[][] A = {
             {  8,  9,  7.893 },
             {  7, 10,  8.954 },
-            {  6, 11, 10.515 },
+            {  6, 11, 10.015 },
             {  5, 12, 11.076 },
             {  4, 13, 12.137 },
             {  3, 14, 13.198 },
@@ -123,7 +123,7 @@ public class DetectionAnode {
             }
             
         } 
-        CP = new int[k][2]; //data type should be float. cause distance have decimale
+        CP = new int[k][2]; 
 
         /*
          * 
@@ -175,9 +175,10 @@ public class DetectionAnode {
          * etape 6
         */
         //String encoding = "UTF-8";
-        boolean appendMose = false;
-        FileWriter writer = new FileWriter(fileDetection,StandardCharsets.UTF_8,appendMose); //true for append mode
-        if(!fileDetection.exists() || !appendMose){
+        
+        
+        if(!fileDetection.exists()){
+            FileWriter writer = new FileWriter(fileDetection,StandardCharsets.UTF_8); //true for append mode
                         writer.write("anode_number;");  
                         writer.write("location_name;");  
                         writer.write("groupe;");   
@@ -185,8 +186,10 @@ public class DetectionAnode {
                         writer.write("timestamp;");    
                         writer.write("line_number;");
                         writer.write("\n");
-        }                 
+                        writer.close();
+        }
 
+        FileWriter writer = new FileWriter(fileDetection,StandardCharsets.UTF_8,true); //true for append mode
         for (int j = 0; j < k; j ++){
 
             for (int i = 0; i < 8; i ++){

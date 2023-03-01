@@ -3,7 +3,7 @@ import java.time.LocalDateTime;
 public class RfidSural {
     protected String readerId;
     protected String tagId;
-    protected String distance;
+    protected double distance;
     protected String mse;
     protected String Groupe;
     //protected String NightGroup;
@@ -16,7 +16,7 @@ public class RfidSural {
         line = rowcsv.split(";");
         this.readerId = line[0];
         this.tagId = line[1];
-        this.distance = line[2].replace(',', '.');
+        this.distance = Double.valueOf(line[2].replace(',', '.'));
         this.timestamp = utilities.convertStringToDateTime(line[3]);
         
     }

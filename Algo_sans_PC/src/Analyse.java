@@ -6,9 +6,9 @@ import java.util.Objects;
 public class Analyse {
 
     public ArrayList<String[]> antenneLocation = new ArrayList<>();
-    public  ArrayList<mseEnAnode> mseInfo = new ArrayList<>();
-    public  ArrayList<RfidSural> rfidsuralData = new ArrayList<>();
-    public  ArrayList<RfidSural> temprfidsuralData = new ArrayList<>();
+    public ArrayList<mseEnAnode> mseInfo = new ArrayList<>();
+    public ArrayList<RfidSural> rfidsuralData = new ArrayList<>();
+    public static ArrayList<RfidSural> temprfidsuralData = new ArrayList<>();
     public ArrayList<String[]> readerAnode = new ArrayList<>();
     public ArrayList<String[]> paireAntenneBaliseInOperation = new ArrayList<>();
 
@@ -26,8 +26,10 @@ public class Analyse {
         this.fileForDetectionAnode = fileDest;
 
         rfidSuralDataInAnode();
-        write_csv(temprfidsuralData,fileDest);
+        DetectionCoupPince dCP = new DetectionCoupPince(temprfidsuralData,fileDest);
+        //write_csv(temprfidsuralData,fileDest);
     }
+    public Analyse(){}
     enum shiftEnum{
             NONE,
             DAY,
