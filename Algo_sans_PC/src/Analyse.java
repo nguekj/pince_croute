@@ -29,6 +29,22 @@ public class Analyse {
         DetectionCoupPince dCP = new DetectionCoupPince(temprfidsuralData,fileDest);
         //write_csv(temprfidsuralData,fileDest);
     }
+
+    public Analyse(File fileOperation, File fileEquipement, File fileRfidSural, File fileDest, File fileTraite){
+
+        ReadFile rf = new ReadFile(fileEquipement, fileOperation,fileRfidSural);
+
+        this.antenneLocation = rf.getAntenneLocation();
+        this.mseInfo = rf.getMSEOperationInfo();
+        this.rfidsuralData = rf.getRfidSural();
+        this.fileForDetectionAnode = fileDest;
+
+        rfidSuralDataInAnode();
+        //DetectionCoupPince dCP = new DetectionCoupPince(temprfidsuralData,fileDest);
+        write_csv(temprfidsuralData,fileTraite);
+    }
+
+
     public Analyse(){}
     enum shiftEnum{
             NONE,
@@ -95,6 +111,7 @@ public class Analyse {
                     temp[1] = antenneLocation.get(j)[1];//tag
                     temp[2] = antenneLocation.get(j)[2];//mse
                     paireAntenneBaliseInOperation.add(temp);
+                    
                     break;
                 }
             }
